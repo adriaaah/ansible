@@ -1,0 +1,23 @@
+# The user that gets all the mails (UID < 1000, usually the admin)
+root={{ smtpRecipient }}
+
+# The mail server (where the mail is sent to), both port 465 or 587 should be acceptable
+# See also http://mail.google.com/support/bin/answer.py?answer=78799
+mailhub={{ smtpServer }}
+
+# The address where the mail appears to come from for user authentication.
+rewriteDomain={{ domain }}
+
+# The full hostname
+hostname={{ hostname.stdout }}
+
+# Use SSL/TLS before starting negotiation
+#UseTLS=Yes
+#UseSTARTTLS=Yes
+
+# Username/Password
+AuthUser={{ smtpUser }}
+AuthPass={{ smtpPass }}
+
+# Email 'From header's can override the default domain?
+FromLineOverride=no

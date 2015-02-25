@@ -1,0 +1,8 @@
+---
+- name: Secure the server
+  hosts: all
+  remote_user: user
+  sudo: yes
+  roles:
+    - common
+    - external

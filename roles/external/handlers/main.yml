@@ -1,0 +1,9 @@
+---
+- name: update rkhunter
+  command: rkhunter --propupd
+
+- name: iptables restore
+  command: iptables-restore < /etc/network/iptables.rules
+
+- name: restart fail2ban
+  service: name=fail2ban state=restarted

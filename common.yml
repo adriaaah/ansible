@@ -1,0 +1,7 @@
+---
+- name: Deploy a baseline
+  hosts: all
+  remote_user: user
+  sudo: yes
+  roles:
+    - common

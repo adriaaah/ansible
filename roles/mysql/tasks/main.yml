@@ -1,0 +1,13 @@
+---
+- name: Install MySQL server
+  apt: name=mysql-server state=present
+  tags: mysql
+
+- name: Prepare secure settings
+  template: src=mysql_secure_installation.sql.j2 dest=/tmp/mysql_secure_installation.sql
+  tags: mysql
+
+- name: Secure MySQL installation
+  command: "cat /tmp/mysql_secure_installation.sql | mysql"
+  notify: restart mysql
+  tags: mysql

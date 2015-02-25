@@ -1,0 +1,38 @@
+---
+
+- name: Install software to secure/protect external servers
+  apt: name={{ item }} state=present
+  with_items:
+    - rkhunter
+    - iptables
+    - fail2ban
+  notify: update rkhunter
+  tags: 
+    - external
+    - rkhunter
+    - iptables
+    - fail2ban
+
+- name: Configure RKHunter
+  #replace: dest=/etc/rkhunter.conf regexp="^#SCRIPTWHITELIST=/usr/bin/unhide.rb" replace="SCRIPTWHITELIST=/usr/bin/unhide.rb"
+  template: src=rkhunter.conf.j2 dest=/etc/rkhunter.conf
+  notify: update rkhunter
+  tags:
+    - external
+    - rkhunter
+
+- name: Adding a RKHunter update and scan to crontab
+  cron: name="RKHunter update" minute="0" hour="4" day="*" job="/usr/bin/rkhunter --cronjob --update --quiet; /usr/bin/rkhunter --cronjob -c --enable all --quiet"
+  tags:
+    - external
+    - rkhunter
+
+- name: Configure iptables
+  # Commented since we don't have any baseline iptables configuration yet.
+  template: src=iptables.rules.j2 dest=/etc/network/iptables.rules
+  notify: iptables restore
+  tags: iptables
+
+- name: Configure fail2ban only for SSH
+  template: src=jail.conf.j2 dest=/etc/fail2ban/jail.conf
+  notify: restart fail2ban

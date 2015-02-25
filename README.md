@@ -1,2 +1,2 @@
 # ansible
-My playbooks collection
+Ansible playbooks
