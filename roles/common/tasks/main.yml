@@ -15,6 +15,7 @@
   with_items:
     - unattended-upgrades
     - logwatch
+    - mailutils
     - ssmtp
     - snmp
     - snmpd
