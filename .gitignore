@@ -1,3 +1,4 @@
 hosts
 group_vars/all/secrets
 ubuntu.ks
+roles/external/templates/iptables.rules.j2
