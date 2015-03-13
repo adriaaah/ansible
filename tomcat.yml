@@ -1,0 +1,8 @@
+---
+- name: Install Tomcat7
+  hosts: tomcat
+  remote_user: user
+  sudo: yes
+  roles:
+    - common
+    - tomcat
