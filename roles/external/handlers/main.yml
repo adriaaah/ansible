@@ -3,7 +3,7 @@
   command: rkhunter --propupd
 
 - name: iptables restore
-  command: iptables-restore < /etc/network/iptables.rules
+  command: iptables-restore < /etc/network/iptables
 
 - name: restart fail2ban
   service: name=fail2ban state=restarted
