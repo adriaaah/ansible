@@ -67,7 +67,8 @@
   tags: ssmtp
 
 - name: Prepare Logwatch
-  command: mkdir /var/cache/logwatch
+  #command: mkdir /var/cache/logwatch
+  file: dest=/var/cache/logwatch state=directory
   tags: logwatch
 
 - name: Configure Logwatch

@@ -22,9 +22,20 @@
   cron: name="RKHunter update" minute="0" hour="4" day="*" job="/usr/bin/rkhunter --cronjob --update --quiet; /usr/bin/rkhunter --cronjob -c --enable all --quiet"
   tags: rkhunter
 
+# - name: Prepare Iptables
+#   command: iptables-save > /etc/network/iptables
+#   tags: iptables
+# 
 - name: Configure iptables
-  # Commented since we don't have any baseline iptables configuration yet.
   template: src=iptables.rules.j2 dest=/etc/network/iptables
+# lineinfile: dest=/etc/network/iptables
+#             regexp="^-A INPUT -s {{ publicIP }} -p {{item.protocol}} -m {{item.protocol}} --dport {{item.port}} -j ACCEPT$"
+#             line="-A INPUT -s {{ publicIp }} -p {{item.protocol}} -m {{item.protocol}} --dport {{item.port}} -j ACCEPT"
+#             insertafter="^:OUTPUT ACCEPT \[\d*:\d*\]$"
+# with_items:
+#   - { protocol: tcp, port: 22 }
+#   - { protocol: tcp, port: 80 }
+# notify: restart iptables
   notify: iptables restore
   tags: iptables
 
