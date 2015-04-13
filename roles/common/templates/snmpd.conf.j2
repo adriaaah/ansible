@@ -56,6 +56,7 @@ rocommunity {{ snmpCommunity }} default
                                                  #     settings, change the community string,
                                                  #     and check the 'agentAddress' setting above
 #rocommunity secret  10.0.0.0/16
+rocommunity {{ snmpCommunity }} {{ snmpNetwork }}
 
                                                  #  Full read-only access for SNMPv3
  rouser   authOnlyUser

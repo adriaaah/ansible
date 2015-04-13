@@ -1,8 +1,0 @@
----
-- name: Install Apache
-  hosts: apache
-  remote_user: user
-  sudo: yes
-  roles:
-    - common
-    - apache

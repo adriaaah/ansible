@@ -1,93 +1,82 @@
 ---
 
-- name: Change root password
-  user: name=root password={{ rootPassword }}
-- name: Update repos
-  apt: update_cache=yes
+###
+# If we have to set up network settings (eg. routes), change root
+# password, create new users, etc. , here is a good place to do so.
+###
+
+### APT
+- name: Update repos and keep installed packages up to date.
+  apt:
+    update_cache: yes
+    upgrade: safe
   tags: update
 
-- name: Ensure that the system is up to date
-  apt: upgrade=safe
-  tags: update
+### NTP
+- name: Ensure that box time is right and keep synced all day long.
+  command: 'ntpdate "{{ ntpServer }}"'
+  notify: ntp timezone
+  tags: ntp
 
-- name: Install base software
-  apt: name={{ item }} state=present
+### Unattended-upgrades
+- name: Install Unattended-upgrades.
+  apt:
+    name: unattended-upgrades
+    state: present
+  notify: unattended-upgrades settings
+  tags: unattended-upgrades
+
+### sSMTP
+- name: Install sSMTP.
+  apt:
+    name: ssmtp
+    state: present
+  notify: ssmtp hostname
+  tags: ssmtp
+
+### Logwatch
+# Logwatch needs 'mail' tool in order to send daily reports.
+- name: Install Logwatch.
+  apt:
+    name: "{{ item }}"
+    state: present
   with_items:
-    - unattended-upgrades
-    - logwatch
     - mailutils
-    - ssmtp
-    - snmp
-    - snmpd
-    # Commented since it doesn't work in lab environment.
-    #- vmware-tools-core
-  tags:
-    - update
-    - ssmtp
-    - snmp
     - logwatch
-    - software
-
-- name: Enable automatic security upgrades
-  template: src=20unattended-upgrades.j2 dest=/etc/apt/apt.conf.d/20auto-upgrades
-  tags:
-  - update
-  - software
-
-- name: Configures unattended upgrades
-  template: src=50unattended-upgrades.j2 dest=/etc/apt/apt.conf.d/50unattended-upgrades
-  tags: update
-
-- name: Ensure time will synced daily
-  cron: name="Time sync" minute="0" hour="5" day="*" job="/usr/sbin/ntpdate {{ ntpServer }} > /dev/null 2>&1"
-  tags:
-  - software
-  - ntp
-
-- name: Configure SNMPd
-  template: src=snmpd.conf.j2 dest=/etc/snmp/snmpd.conf
-  notify: restart snmp
-  tags:
-  - software
-  - snmp
-
-- name: Get hostname
-  command: hostname -f
-  register: hostname
-  tags:
-  - software
-  - ssmtp
-
-- name: Configure SSMTP
-  template: src=ssmtp.conf.j2 dest=/etc/ssmtp/ssmtp.conf
-  tags: ssmtp
-
-- name: Configure revaliases
-  lineinfile: dest=/etc/ssmtp/revaliases line="root:{{ smtpRecipient }}:{{ smtpServer }}"
-  tags: ssmtp
-
-- name: Prepare Logwatch
-  #command: mkdir /var/cache/logwatch
-  file: dest=/var/cache/logwatch state=directory
+  notify: logwatch settings
   tags: logwatch
 
-- name: Configure Logwatch
-  template: src=logwatch.conf.j2 dest=/etc/logwatch/conf/logwatch.conf
-  tags: logwatch
+### SNMP
+- name: Install SNMP.
+  apt:
+    name: snmpd
+    state: present
+  notify: snmp settings
+  tags: snmp
 
-# Commented as an example
-# - name: Install NTP
-#   apt: name=ntp state=latest
-#   tags: ntp
-# - name: Configure NTP
-#   template: src=ntp.conf.j2 dest=/etc/ntp.conf
-#   tags: ntp
-#   notify: restart ntp
+### Apparmor is removed for testing purposes.
+#- name: Disable Apparmor
+# Commented since doesn't work.
+#  service:
+#    name: apparmor
+#    enabled: no
+#    state: stopped
 
-#- name: Install fail2ban
-#  tags: fail2ban
-#- name: Configure fail2ban
-#  tags: fail2ban
-#- name: Start fail2ban
-#  tags: fail2ban
-#  notify: restart fail2ban
+# Another way to do the same, not Ansible style:
+#  command: 'update-rc.d -f apparmor remove'
+- name: Remove apparmor
+  apt:
+    name: apparmor
+    state: absent
+  notify: etckeeper update
+  tags: apparmor
+
+### UFW will removed since I use Iptables.
+- name: UFW uninstall
+  apt:
+    name: ufw
+    state: absent
+  notify: etckeeper update
+  tags:
+    - ufw
+    - iptables

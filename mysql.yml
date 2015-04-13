@@ -1,8 +1,0 @@
----
-- name: Install MySQL Server
-  hosts: mysql
-  remote_user: user
-  sudo: yes
-  roles:
-    - common
-    - mysql

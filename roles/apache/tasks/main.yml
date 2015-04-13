@@ -1,7 +1,0 @@
----
-- name: Install Apache2
-  apt: name={{ item }} state=present
-  with_items:
-    - apache2 
-    #- apache2-utils
-  tags: apache

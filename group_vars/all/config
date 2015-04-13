@@ -1,2 +1,4 @@
 ---
+# NTP settings
 ntpServer: 1.es.pool.ntp.org
+ntpTimezone: Europe/Madrid

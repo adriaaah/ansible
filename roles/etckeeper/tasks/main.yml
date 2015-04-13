@@ -1,0 +1,37 @@
+---
+
+### Etckeeper
+# In Ubuntu, etckeeper comes with bzr as default CVS. Sinc I prefer
+# using it together with Git, I install git first as dependency, so bzr
+# won't be installed.
+- name: Install Etckeeper.
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - git
+    - etckeeper
+
+# Configure etckeeper for working with Git instead of Bzr
+- name: etckeeper settings
+  lineinfile:
+    dest: /etc/etckeeper/etckeeper.conf
+    backrefs: yes
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^VCS="bzr"', line: '#VCS="bzr"' }
+    - { regexp: '^#?VCS="git"', line: 'VCS="git"' }
+
+- name: etckeeper init
+  command: 'etckeeper init'
+
+- name: etckeeper check init commit
+  stat:
+    path: /etc/.git/COMMIT_EDITMSG
+  register: etckeeperYetCommited
+
+- name: etckeeper first commit
+  command: 'etckeeper commit "Initial commit."'
+  when: not etckeeperYetCommited.stat.exists
+

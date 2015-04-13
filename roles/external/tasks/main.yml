@@ -1,45 +1,35 @@
 ---
 
-- name: Install software to secure/protect external servers
-  apt: name={{ item }} state=present
-  with_items:
-    - rkhunter
-    - iptables
-    - fail2ban
-  notify: update rkhunter
-  tags: 
-    - rkhunter
-    - iptables
-    - fail2ban
-
-- name: Configure RKHunter
-  #replace: dest=/etc/rkhunter.conf regexp="^#SCRIPTWHITELIST=/usr/bin/unhide.rb" replace="SCRIPTWHITELIST=/usr/bin/unhide.rb"
-  template: src=rkhunter.conf.j2 dest=/etc/rkhunter.conf
-  notify: update rkhunter
+### Rkhunter
+- name: Install Rkhunter.
+  apt:
+    name: rkhunter
+    state: present
+  notify: rkhunter settings
   tags: rkhunter
 
-- name: Adding a RKHunter update and scan to crontab
-  cron: name="RKHunter update" minute="0" hour="4" day="*" job="/usr/bin/rkhunter --cronjob --update --quiet; /usr/bin/rkhunter --cronjob -c --enable all --quiet"
-  tags: rkhunter
-
-# - name: Prepare Iptables
-#   command: iptables-save > /etc/network/iptables
-#   tags: iptables
-# 
-- name: Configure iptables
-  template: src=iptables.rules.j2 dest=/etc/network/iptables
-# lineinfile: dest=/etc/network/iptables
-#             regexp="^-A INPUT -s {{ publicIP }} -p {{item.protocol}} -m {{item.protocol}} --dport {{item.port}} -j ACCEPT$"
-#             line="-A INPUT -s {{ publicIp }} -p {{item.protocol}} -m {{item.protocol}} --dport {{item.port}} -j ACCEPT"
-#             insertafter="^:OUTPUT ACCEPT \[\d*:\d*\]$"
+### Iptables
+- name: Configure Iptables.
+  template:
+    src: iptables.rules.j2
+    dest: /etc/network/iptables
+# Another way to create protocol+port-based rules
+#   lineinfile:
+#     dest: /etc/network/iptables
+#     regexp: "^-A INPUT -s {{ publicIP }} -p {{ item.proto }} -m {{ item.proto }} --dport {{ item.port }} -j ACCEPT$"
+#     line: "-A INPUT -s {{ publicIp }} -p {{ item.proto }} -m {{ item.proto }} --dport {{ item.port }} -j ACCEPT"
+#     insertafter: "^:OUTPUT ACCEPT \[\d*:\d*\]$"
 # with_items:
-#   - { protocol: tcp, port: 22 }
-#   - { protocol: tcp, port: 80 }
-# notify: restart iptables
-  notify: iptables restore
+#   - { proto: tcp, port: 22 }
+#   - { proto: tcp, port: 80 }
+  notify: iptables restart
   tags: iptables
 
-- name: Configure fail2ban only for SSH
-  template: src=jail.conf.j2 dest=/etc/fail2ban/jail.conf
-  notify: restart fail2ban
+### Fail2ban
+- name: Install Fail2ban.
+  apt:
+    name: fail2ban
+    state: present
+  notify: fail2ban settings
   tags: fail2ban
+

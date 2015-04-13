@@ -1,13 +1,54 @@
 ---
-- name: update rkhunter
-  command: rkhunter --propupd
 
-- name: iptables restore
-# command: iptables-restore -! < /etc/network/iptables
-  shell: iptables-restore < /etc/network/iptables
+### Rkhunter
+- name: rkhunter settings
+  template:
+    src: rkhunter.conf.j2
+    dest: /etc/rkhunter.conf
+  notify: rkhunter cron
 
-#- name: restart iptables
-#  service: name=iptables state=restarted
+- name: rkhunter cron
+  cron:
+    name: "Rkhunter update"
+    minute: "0"
+    hour: "4"
+    day: "*"
+    job: "/usr/bin/rkhunter --cronjob --update --quiet; /usr/bin/rkhunter --cronjob -c --enable all --quiet"
+  notify: rkhunter warning mails
 
-- name: restart fail2ban
-  service: name=fail2ban state=restarted
+- name: rkhunter warning mails
+  lineinfile:
+    dest: /etc/default/rkhunter
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - { regexp: '^CRON_DAILY_RUN', line: 'CRON_DAILY_RUN="true"' }
+    - { regexp: '^CRON_DB_UPDATE', line: 'CRON_DB_UPDATE="true"' }
+  notify: etckeeper update
+
+### Iptables
+- name: iptables restart
+  command: 'iptables-restore -!< /etc/network/iptables'
+  notify: iptables startup
+
+- name: iptables startup
+  lineinfile:
+    dest: /etc/network/interfaces
+    insertafter: "^iface eth0 inet static$"
+    line: "    post-up iptables-restore < /etc/network/iptables"
+  notify: etckeeper update
+
+
+### Fail2ban
+- name: fail2ban settings
+  template:
+    src: jail.conf.j2
+    dest: /etc/fail2ban/jail.conf
+  notify: fail2ban restart
+
+- name: fail2ban restart
+  service:
+    name: fail2ban
+    state: restarted
+  notify: etckeeper update
