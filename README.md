@@ -1,9 +1,9 @@
 # Ansible
-Ansible playbooks
+My Ansible playbooks which are useful to me.
 
 ## Description
 * Just a place where I put my own Ansible playbooks.
-* They are written for Ubuntu 14 boxes (please, don't blame me)
+* They are written for Ubuntu 14 boxes.
 * These playbooks are in a very early stage, so please be patient and let me improve them.
 * Some files aren't uploaded due to security/privacy reasons ([.gitignore](.gitignore) rules). Anyway, I hope this code is pretty clear enough.
 
