@@ -25,6 +25,10 @@
   with_items:
     - { regexp: '^CRON_DAILY_RUN', line: 'CRON_DAILY_RUN="true"' }
     - { regexp: '^CRON_DB_UPDATE', line: 'CRON_DB_UPDATE="true"' }
+  notify: rkhunter propupd
+
+- name: rkhunter propup
+  command: 'rkhunter --propupd'
   notify: etckeeper update
 
 ### Iptables
