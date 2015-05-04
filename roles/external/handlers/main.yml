@@ -5,15 +5,16 @@
   template:
     src: rkhunter.conf.j2
     dest: /etc/rkhunter.conf
-  notify: rkhunter cron
-
-- name: rkhunter cron
-  cron:
-    name: "Rkhunter update"
-    minute: "0"
-    hour: "4"
-    day: "*"
-    job: "/usr/bin/rkhunter --cronjob --update --quiet; /usr/bin/rkhunter --cronjob -c --enable all --quiet"
+# Disabled since Rkhunter adds a job in cron.daily, so it isn't needed.
+#  notify: rkhunter cron
+#
+#- name: rkhunter cron
+#  cron:
+#    name: "Rkhunter update"
+#    minute: "0"
+#    hour: "4"
+#    day: "*"
+#    job: "/usr/bin/rkhunter --cronjob --update --quiet; /usr/bin/rkhunter --cronjob -c --enable all --quiet"
   notify: rkhunter warning mails
 
 - name: rkhunter warning mails
@@ -25,6 +26,7 @@
   with_items:
     - { regexp: '^CRON_DAILY_RUN', line: 'CRON_DAILY_RUN="true"' }
     - { regexp: '^CRON_DB_UPDATE', line: 'CRON_DB_UPDATE="true"' }
+    - { regexp: '^APT_AUTOGEN', line: 'APT_AUTOGEN="true"' }
   notify: rkhunter propupd
 
 - name: rkhunter propup
