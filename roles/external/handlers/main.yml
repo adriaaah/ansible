@@ -27,7 +27,7 @@
     - { regexp: '^CRON_DAILY_RUN', line: 'CRON_DAILY_RUN="true"' }
     - { regexp: '^CRON_DB_UPDATE', line: 'CRON_DB_UPDATE="true"' }
     - { regexp: '^APT_AUTOGEN', line: 'APT_AUTOGEN="true"' }
-  notify: rkhunter propupd
+  notify: rkhunter propup
 
 - name: rkhunter propup
   command: 'rkhunter --propupd'
