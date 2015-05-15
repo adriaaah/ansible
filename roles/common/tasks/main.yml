@@ -80,3 +80,24 @@
   tags:
     - ufw
     - iptables
+
+### Webmin
+- name: Webmin prerequisites
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  with_items:
+    - deb http://download.webmin.com/download/repository sarge contrib
+    - deb http://webmin.mirror.somersettechsolutions.co.uk/repository sarge contrib  
+  notify: webmin apt key
+  tags: webmin
+
+### NRPE
+- name: NRPE Nagios server
+  apt:
+    name: nagios-nrpe-server
+    state: present
+  notify: nrpe settings
+  tags:
+    - nagios
+    - nrpe
