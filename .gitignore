@@ -1,5 +1,4 @@
 hosts
-group_vars/all/secrets
 ubuntu.ks
 roles/common/files/miniserv.pem
 roles/external/templates/iptables.rules.j2
