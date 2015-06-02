@@ -1,0 +1,10 @@
+---
+
+# Apache2 settings
+#- name: apache settings
+#- notify apache copy certificates
+
+# Certificates
+- name: apache 
+  notify: apache ssl
+  command: a2enmod ssl

@@ -1,10 +1,5 @@
 ---
 
-###
-# If we have to set up network settings (eg. routes), change root
-# password, create new users, etc. , here is a good place to do so.
-###
-
 ### APT
 - name: Update repos and keep installed packages up to date.
   apt:
@@ -14,17 +9,29 @@
 
 ### NTP
 - name: Ensure that box time is right and keep synced all day long.
-  command: 'ntpdate "{{ ntpServer }}"'
+# Replaced by nptd since ntpdate will be deprecated.
+#  command: 'ntpdate "{{ ntpServer }}"'
+  apt:
+    name: ntp
+    state: present
   notify: ntp timezone
   tags: ntp
 
-### Unattended-upgrades
-- name: Install Unattended-upgrades.
+### APT-related packages
+- name: Install APT-related stuff
   apt:
-    name: unattended-upgrades
+    name: "{{ item }}"
     state: present
+  with_items:
+    - unattended-upgrades
+    - apt-listchanges
+    - debsums
   notify: unattended-upgrades settings
-  tags: unattended-upgrades
+  tags: 
+    - apt
+    - unattended-upgrades
+    - apt-listchanges
+    - debsums
 
 ### sSMTP
 - name: Install sSMTP.
@@ -55,15 +62,6 @@
   tags: snmp
 
 ### Apparmor is removed for testing purposes.
-#- name: Disable Apparmor
-# Commented since doesn't work.
-#  service:
-#    name: apparmor
-#    enabled: no
-#    state: stopped
-
-# Another way to do the same, not Ansible style:
-#  command: 'update-rc.d -f apparmor remove'
 - name: Remove apparmor
   apt:
     name: apparmor

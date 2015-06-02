@@ -1,9 +1,9 @@
 ---
 
 ### Etckeeper
-# In Ubuntu, etckeeper comes with bzr as default CVS. Sinc I prefer
-# using it together with Git, I install git first as dependency, so bzr
-# won't be installed.
+# In Ubuntu, etckeeper is shipped with bzr as default CVS. Since I
+# prefer using it together with Git, I install git first as dependency,
+# so bzr won't be installed.
 - name: Install Etckeeper.
   apt:
     name: "{{ item }}"
@@ -34,4 +34,3 @@
 - name: etckeeper first commit
   command: 'etckeeper commit "Initial commit."'
   when: not etckeeperYetCommited.stat.exists
-

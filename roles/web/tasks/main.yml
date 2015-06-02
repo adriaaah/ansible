@@ -1,0 +1,12 @@
+---
+
+### Apache2 installation
+- name: apache2 installation
+  apt:
+    name: apache2
+    state: present
+  notify: apache ssl
+  tags:
+  - apache
+  - ssl
+

@@ -1,16 +1,5 @@
 ---
 
-#- name: etckeeper check init commit
-#  stat:
-#    path: /etc/.git/COMMIT_EDITMSG
-#  register: etckeeperYetCommited
-#  notify: etckeeper first commit
-#
-#- name: etckeeper first commit
-##  command: 'etckeeper commit "Initial commit."'
-#  debug: msg="No existeix"
-#  when: not etckeeperYetCommited.stat.exists
-
 - name: etckeeper update
   shell: 'cd /etc && git ls-files -m'
   register: etckeeperCommit

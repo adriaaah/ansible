@@ -1,0 +1,13 @@
+---
+
+- name: fail2ban settings
+  template:
+    src: jail.conf.j2
+    dest: /etc/fail2ban/jail.conf
+  notify: fail2ban restart
+
+- name: fail2ban restart
+  service:
+    name: fail2ban
+    state: restarted
+  notify: etckeeper update

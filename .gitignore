@@ -1,5 +1,5 @@
-hosts
 ubuntu.ks
-roles/common/files/miniserv.pem
+production
 roles/external/templates/iptables.rules.j2
 roles/tomcat/files/jssecacerts
+stage

@@ -1,0 +1,13 @@
+---
+
+- name: ntp timezone
+  command: 'ln -sf /usr/share/zoneinfo/"{{ ntpTimezone }}" /etc/localtime'
+  notify: ntp cron
+
+- name: ntp cron
+  cron:
+    name: "Time will be synced once at day."
+    minute: "0"
+    hour: "5"
+    day: "*"
+    job: "/usr/sbin/ntpdate {{ ntpServer }} > /dev/null 2>&1"

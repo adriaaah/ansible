@@ -1,0 +1,23 @@
+---
+
+- name: rkhunter settings
+  template:
+    src: rkhunter.conf.j2
+    dest: /etc/rkhunter.conf
+  notify: rkhunter warning mails
+
+- name: rkhunter warning mails
+  lineinfile:
+    dest: /etc/default/rkhunter
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - { regexp: '^CRON_DAILY_RUN', line: 'CRON_DAILY_RUN="true"' }
+    - { regexp: '^CRON_DB_UPDATE', line: 'CRON_DB_UPDATE="true"' }
+    - { regexp: '^APT_AUTOGEN', line: 'APT_AUTOGEN="true"' }
+  notify: rkhunter propup
+
+- name: rkhunter propup
+  command: 'rkhunter --propupd'
+  notify: etckeeper update

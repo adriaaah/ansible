@@ -1,0 +1,12 @@
+---
+- name: nrpe settings
+  template:
+    src: nrpe.cfg.j2
+    dest: /etc/nagios/nrpe.cfg
+  notify: nrpe restart
+
+- name: nrpe restart
+  service:
+    name: nagios-nrpe-server
+    state: restarted
+  notify: etckeeper update

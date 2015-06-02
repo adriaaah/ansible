@@ -9,7 +9,7 @@ My Ansible playbooks, which are useful to run my daily job and hope become also 
 * ... I'm starting to use Ansible Vault.
 
 ## Let's fly!
-* Type something like `ansible-playbook -i hosts common.yml -K --ask-vault-pass`.
+* Type something like `ansible-playbook -i production site.yml -K --ask-vault-pass`.
 
 ## To Do
 * Add conditional statements in order to provide more compatibility.
