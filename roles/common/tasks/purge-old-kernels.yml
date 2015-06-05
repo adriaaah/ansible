@@ -1,0 +1,15 @@
+---
+### Purging old kernels, but keeps the running one and two latest also.
+# This script is a part of bikeshed Ubuntu package, which is, according
+# to its description, a "random useful tools that do not yet have a
+# permanent home".
+# This package is pretty large and we just need this script, so
+# previously was extracted and put apart, preserving both path and
+# permissions.
+- name: Purge old kernels
+  copy:
+    src: purge-old-kernels
+    dest: /usr/bin/purge-old-kernels
+    mode: 0755
+  notify: purge-old-kernels run
+  tags: purge-old-kernels

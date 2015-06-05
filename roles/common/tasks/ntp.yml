@@ -1,0 +1,10 @@
+---
+### NTP
+- name: Ensure that box time is right and keep synced all day long.
+# Replaced by nptd since ntpdate will be deprecated.
+#  command: 'ntpdate "{{ ntpServer }}"'
+  apt:
+    name: ntp
+    state: present
+  notify: ntp timezone
+  tags: ntp

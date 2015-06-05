@@ -28,3 +28,8 @@
     regexp: '^CRON_CHECK=never'
     line: '^CRON_CHECK=weekly'
   notify: etckeeper update
+
+
+### Purge-old-kernels
+- name: purge-old-kernels run
+  command: /usr/bin/purge-old-kernels -qy

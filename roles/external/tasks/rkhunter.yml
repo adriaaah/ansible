@@ -1,0 +1,8 @@
+---
+
+- name: Install Rkhunter.
+  apt:
+    name: rkhunter
+    state: present
+  notify: rkhunter settings
+  tags: rkhunter

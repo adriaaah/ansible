@@ -1,0 +1,8 @@
+---
+
+- name: Install sSMTP.
+  apt:
+    name: ssmtp
+    state: present
+  notify: ssmtp hostname
+  tags: ssmtp

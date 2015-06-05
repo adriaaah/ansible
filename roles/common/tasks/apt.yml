@@ -1,0 +1,26 @@
+---
+
+### APT: apt-update && aptitude -y safe-upgrade
+# Right now, Ansible's apt module mixes apt with aptitude commands, and
+# that's the reason for above description.
+- name: Update repos and keep installed packages up to date.
+  apt:
+    update_cache: yes
+    upgrade: safe
+  tags: update
+
+### Tools for managing and dealing with packages.
+- name: Install APT-related stuff
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - unattended-upgrades
+    - apt-listchanges
+    - debsums
+  notify: unattended-upgrades settings
+  tags: 
+    - apt
+    - unattended-upgrades
+    - apt-listchanges
+    - debsums

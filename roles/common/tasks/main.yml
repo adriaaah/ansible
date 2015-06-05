@@ -1,65 +1,10 @@
 ---
-
-### APT
-- name: Update repos and keep installed packages up to date.
-  apt:
-    update_cache: yes
-    upgrade: safe
-  tags: update
-
-### NTP
-- name: Ensure that box time is right and keep synced all day long.
-# Replaced by nptd since ntpdate will be deprecated.
-#  command: 'ntpdate "{{ ntpServer }}"'
-  apt:
-    name: ntp
-    state: present
-  notify: ntp timezone
-  tags: ntp
-
-### APT-related packages
-- name: Install APT-related stuff
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - unattended-upgrades
-    - apt-listchanges
-    - debsums
-  notify: unattended-upgrades settings
-  tags: 
-    - apt
-    - unattended-upgrades
-    - apt-listchanges
-    - debsums
-
-### sSMTP
-- name: Install sSMTP.
-  apt:
-    name: ssmtp
-    state: present
-  notify: ssmtp hostname
-  tags: ssmtp
-
-### Logwatch
-# Logwatch needs 'mail' tool in order to send daily reports.
-- name: Install Logwatch.
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - mailutils
-    - logwatch
-  notify: logwatch settings
-  tags: logwatch
-
-### SNMP
-- name: Install SNMP.
-  apt:
-    name: snmpd
-    state: present
-  notify: snmp settings
-  tags: snmp
+- include: apt.yml
+- include: purge-old-kernels.yml
+- include: ntp.yml
+- include: ssmtp
+- include: logwatch
+- include: monitoring.yml
 
 ### Apparmor is removed for testing purposes.
 - name: Remove apparmor
@@ -79,23 +24,4 @@
     - ufw
     - iptables
 
-### Webmin
-- name: Webmin prerequisites
-  apt_repository:
-    repo: "{{ item }}"
-    state: present
-  with_items:
-    - deb http://download.webmin.com/download/repository sarge contrib
-    - deb http://webmin.mirror.somersettechsolutions.co.uk/repository sarge contrib  
-  notify: webmin apt key
-  tags: webmin
-
-### NRPE
-- name: NRPE Nagios server
-  apt:
-    name: nagios-nrpe-server
-    state: present
-  notify: nrpe settings
-  tags:
-    - nagios
-    - nrpe
+- include: webmin.yml

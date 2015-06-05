@@ -1,0 +1,18 @@
+---
+### SNMP
+- name: Install SNMP.
+  apt:
+    name: snmpd
+    state: present
+  notify: snmp settings
+  tags: snmp
+
+### NRPE
+- name: NRPE Nagios server
+  apt:
+    name: nagios-nrpe-server
+    state: present
+  notify: nrpe settings
+  tags:
+    - nagios
+    - nrpe

@@ -1,0 +1,8 @@
+---
+
+- name: Install Fail2ban.
+  apt:
+    name: fail2ban
+    state: present
+  notify: fail2ban settings
+  tags: fail2ban
