@@ -1,12 +1,4 @@
 ---
-
 - name: iptables restart
-  command: 'iptables-restore -!< /etc/network/iptables'
-  notify: iptables startup
-
-- name: iptables startup
-  lineinfile:
-    dest: /etc/network/interfaces
-    insertafter: "^iface eth0 inet static$"
-    line: "    post-up iptables-restore < /etc/network/iptables"
+  command: 'iptables-restore -!< /etc/iptables/rules.v4'
   notify: etckeeper update

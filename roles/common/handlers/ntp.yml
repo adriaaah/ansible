@@ -8,11 +8,10 @@
   lineinfile:
     dest: /etc/ntp.conf
     state: present
-    insertafter: "{{ item.after }}"
-    line: "{{ item.line }}"
+    line: "{{ item }}"
   with_items:
-    - { after: 'EOF', line: 'interface ignore wildcard' }
-    - { after: 'EOF', line: 'interface listen 127.0.0.1' }
+    - 'interface ignore wildcard'
+    - 'interface listen 127.0.0.1'
   notify: ntp restart
 
 - name: ntp restart
