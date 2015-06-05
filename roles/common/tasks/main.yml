@@ -2,8 +2,8 @@
 - include: apt.yml
 - include: purge-old-kernels.yml
 - include: ntp.yml
-- include: ssmtp
-- include: logwatch
+- include: ssmtp.yml
+- include: logwatch.yml
 - include: monitoring.yml
 
 ### Apparmor is removed for testing purposes.
@@ -25,3 +25,4 @@
     - iptables
 
 - include: webmin.yml
+- include: misc.yml

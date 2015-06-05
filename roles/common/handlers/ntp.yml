@@ -2,12 +2,21 @@
 
 - name: ntp timezone
   command: 'ln -sf /usr/share/zoneinfo/"{{ ntpTimezone }}" /etc/localtime'
-  notify: ntp cron
+  notify: ntp settings
 
-- name: ntp cron
-  cron:
-    name: "Time will be synced once at day."
-    minute: "0"
-    hour: "5"
-    day: "*"
-    job: "/usr/sbin/ntpdate {{ ntpServer }} > /dev/null 2>&1"
+- name: ntp settings
+  lineinfile:
+    dest: /etc/ntp.conf
+    state: present
+    insertafter: "{{ item.after }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { after: 'EOF', line: 'interface ignore wildcard' }
+    - { after: 'EOF', line: 'interface listen 127.0.0.1' }
+  notify: ntp restart
+
+- name: ntp restart
+  service:
+    name: ntp
+    state: restarted
+  notify: etckeeper update
