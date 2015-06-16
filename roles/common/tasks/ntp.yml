@@ -4,5 +4,24 @@
   apt:
     name: ntp
     state: present
-  notify: ntp timezone
+  tags: ntp
+
+- name: Set timezone.
+  command: 'ln -sf /usr/share/zoneinfo/"{{ ntpTimezone }}" /etc/localtime'
+
+- name: Configure NTP server.
+  lineinfile:
+    dest: /etc/ntp.conf
+    state: present
+    line: "{{ item }}"
+  with_items:
+    - 'interface ignore wildcard'
+    - 'interface listen 127.0.0.1'
+  notify: ntp restart
+
+### etckeeper commit.
+- name: Commit etckeeper
+  debug:
+    msg: "Commit NTP changes to etckeeper."
+  notify: etckeeper update
   tags: ntp

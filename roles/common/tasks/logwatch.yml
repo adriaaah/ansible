@@ -8,5 +8,23 @@
   with_items:
     - mailutils
     - logwatch
-  notify: logwatch settings
+  tags: logwatch
+
+- name: Configure main Logwatch configuration file.
+  template:
+    src: logwatch.conf.j2
+    dest: /etc/logwatch/conf/logwatch.conf
+  tags: logwatch
+
+- name: Create tmp dir (not created by default).
+  file:
+    dest: /var/cache/logwatch
+    state: directory
+  tags: logwatch
+
+### etckeeper commit
+- name: Commit etckeeper
+  debug:
+    msg: "Commit Logwatch changes to etckeeper."
+  notify: etckeeper update
   tags: logwatch

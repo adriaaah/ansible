@@ -1,13 +1,6 @@
 ---
 
-- name: snmp settings
-  template:
-    src: snmpd.conf.j2
-    dest: /etc/snmp/snmpd.conf
-  notify: snmp restart
-
 - name: snmp restart
   service:
     name: snmpd
     state: restarted
-  notify: etckeeper update

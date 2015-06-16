@@ -1,0 +1,7 @@
+---
+
+- name: psad restart
+  service:
+    name: psad
+    state: restarted
+  notify: iptables restart

@@ -1,0 +1,57 @@
+---
+- name: Psad install
+  apt:
+    name: psad
+    state: present
+  tags:
+    - psad
+    - iptables
+
+- name: psad settings
+  lineinfile:
+    dest: /etc/psad/psad.conf
+    backrefs: yes
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^EMAIL_ADDRESSES', line: 'EMAIL_ADDRESSES {{ smtpRecipient }};' }
+    - { regexp: '^HOSTNAME', line: 'HOSTNAME {{ hostname.stdout }};' }
+    - { regexp: '^ENABLE_AUTO_IDS ', line: 'ENABLE_AUTO_IDS Y;'}
+    - { regexp: '^ENABLE_AUTO_IDS_EMAILS', line: 'ENABLE_AUTO_IDS_EMAILS Y;' }
+    - { regexp: '^FLUSH_IPT_AT_INIT', line: 'FLUSH_IPT_AT_INIT N;' }
+    - { regexp: '^ENABLE_IPV6_DETECTION', line: 'ENABLE_IPV6_DETECTION N;' }
+    - { regexp: '^IPT_SYSLOG_FILE', line: 'IPT_SYSLOG_FILE /var/log/syslog;'}
+
+
+  tags:
+    - psad
+    - iptables
+
+- name: Add logging support to iptables
+  lineinfile:
+    dest: /etc/iptables/rules.v4
+    state: present
+    insertbefore: '^-A INPUT -j DROP'
+    line: "{{ item }}"
+  with_items:
+    - '-A INPUT -j LOG'
+    - '-A FORWARD -j LOG'
+  tags:
+    - psad
+    - iptables
+
+- name: Psad update signatures
+  command: '/usr/sbin/psad --sig-update'
+  notify: psad restart
+  tags:
+    - psad
+    - iptables
+
+# etckeeper commit
+- name: Commit Psad settings to etckeeper
+  debug:
+    msg: "Commit Psad settings to etckeeper."
+  notify: etckeeper update
+  tags:
+    - psad
+    - iptables

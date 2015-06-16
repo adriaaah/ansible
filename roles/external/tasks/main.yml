@@ -2,3 +2,4 @@
 - include: rkhunter.yml
 - include: iptables.yml
 - include: fail2ban.yml
+- include: psad.yml

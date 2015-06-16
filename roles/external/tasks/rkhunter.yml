@@ -4,5 +4,32 @@
   apt:
     name: rkhunter
     state: present
-  notify: rkhunter settings
   tags: rkhunter
+
+- name: Copy rkhunter.conf main configuration file.
+  template:
+    src: rkhunter.conf.j2
+    dest: /etc/rkhunter.conf
+  tags: rkhunter
+
+- name: Set Rkhunter to sending mails daily if warnings.
+  lineinfile:
+    dest: /etc/default/rkhunter
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - { regexp: '^CRON_DAILY_RUN', line: 'CRON_DAILY_RUN="true"' }
+    - { regexp: '^CRON_DB_UPDATE', line: 'CRON_DB_UPDATE="true"' }
+    - { regexp: '^APT_AUTOGEN', line: 'APT_AUTOGEN="true"' }
+  tags: rkhunter
+
+- name: Do a Rkhunter --propupd to apply changes.
+  command: 'rkhunter --propupd'
+  tags: rkhunter
+
+# Commit changes to etckeeper
+- name: Commit etckeeper
+  debug:
+    msg: "Commit Rkhunter settings to etckeeper."
+  notify: etckeeper update

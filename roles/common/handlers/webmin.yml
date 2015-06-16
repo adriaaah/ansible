@@ -1,31 +1,6 @@
 ---
 
-- name: webmin apt key
-  apt_key:
-    url: http://www.webmin.com/jcameron-key.asc
-    state: present
-  notify: webmin install
-
-- name: webmin install
-  apt:
-    update_cache: yes
-    name: webmin
-  notify: webmin certificate
-
-- name: webmin certificate
-  copy:
-    src: miniserv.key
-    dest: /etc/webmin/miniserv.key
-    backup: yes
-  notify: webmin decrypt certificate
-
-- name: webmin decrypt certificate
-  command: openssl aes-256-cbc -salt -a -d -in /etc/webmin/miniserv.key -out /etc/webmin/miniserv.pem -k {{ decryptKey }}
-    removes=/etc/webmin/miniserv.key
-  notify: webmin restart
-
 - name: webmin restart
   service:
     name: webmin
     state: restarted
-  notify: etckeeper update

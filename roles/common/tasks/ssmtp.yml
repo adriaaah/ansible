@@ -4,5 +4,28 @@
   apt:
     name: ssmtp
     state: present
-  notify: ssmtp hostname
+  tags: ssmtp
+
+- name: Get hostname
+  command: hostname -f
+  register: hostname
+  tags: ssmtp
+
+- name: Copy ssmtp.conf configuration file.
+  template:
+    src: ssmtp.conf.j2
+    dest: /etc/ssmtp/ssmtp.conf
+  tags: ssmtp
+
+- name: Configure revaliases file.
+  lineinfile:
+    dest: /etc/ssmtp/revaliases
+    line: "root:{{ smtpRecipient }}:{{ smtpServer }}"
+  tags: ssmtp
+
+### etckeeper commit
+- name: Commit etckeeper
+  debug:
+    msg: "Commit SSMTP changes to etckeeper."
+  notify: etckeeper update
   tags: ssmtp

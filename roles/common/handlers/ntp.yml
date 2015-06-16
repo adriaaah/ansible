@@ -1,21 +1,6 @@
 ---
 
-- name: ntp timezone
-  command: 'ln -sf /usr/share/zoneinfo/"{{ ntpTimezone }}" /etc/localtime'
-  notify: ntp settings
-
-- name: ntp settings
-  lineinfile:
-    dest: /etc/ntp.conf
-    state: present
-    line: "{{ item }}"
-  with_items:
-    - 'interface ignore wildcard'
-    - 'interface listen 127.0.0.1'
-  notify: ntp restart
-
 - name: ntp restart
   service:
     name: ntp
     state: restarted
-  notify: etckeeper update

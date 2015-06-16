@@ -11,9 +11,9 @@
   with_items:
     - git
     - etckeeper
+  tags: etckeeper
 
-# Configure etckeeper for working with Git instead of Bzr
-- name: etckeeper settings
+- name: Configure etckeeper for working with Git instead of Bzr.
   lineinfile:
     dest: /etc/etckeeper/etckeeper.conf
     backrefs: yes
@@ -23,15 +23,21 @@
     - { regexp: '^VCS="bzr"', line: '#VCS="bzr"' }
     - { regexp: '^#?VCS="git"', line: 'VCS="git"' }
     - { regexp: '^#AVOID_DAILY_AUTOCOMMITS=1', line: 'AVOID_DAILY_AUTOCOMMITS=1' }
+  tags: etckeeper
+
 
 - name: etckeeper init
   command: 'etckeeper init'
+  tags: etckeeper
 
+# Check if etckeeper was initialised before by looking for a previous commit message.
 - name: etckeeper check init commit
   stat:
     path: /etc/.git/COMMIT_EDITMSG
   register: etckeeperYetCommited
+  tags: etckeeper
 
 - name: etckeeper first commit
   command: 'etckeeper commit "Initial commit."'
   when: not etckeeperYetCommited.stat.exists
+  tags: etckeeper

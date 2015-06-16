@@ -1,5 +1,5 @@
 ---
-- name: Deploy a baseline
+- name: Deploy a baseline for common software.
   hosts: all
   remote_user: user
   sudo: yes

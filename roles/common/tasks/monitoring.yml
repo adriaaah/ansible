@@ -4,7 +4,13 @@
   apt:
     name: snmpd
     state: present
-  notify: snmp settings
+  tags: snmp
+
+- name: Copy snmpd.conf configuration file.
+  template:
+    src: snmpd.conf.j2
+    dest: /etc/snmp/snmpd.conf
+  notify: snmp restart
   tags: snmp
 
 ### NRPE
@@ -12,7 +18,22 @@
   apt:
     name: nagios-nrpe-server
     state: present
-  notify: nrpe settings
   tags:
+    - nagios
+    - nrpe
+
+- name: Copy main NRPE configuration file.
+  template:
+    src: nrpe.cfg.j2
+    dest: /etc/nagios/nrpe.cfg
+  notify: nrpe restart
+
+### Etckeeper commit
+- name: Commit etckeeper
+  debug:
+    msg: "Commit monitoring related changes to etckeeper."
+  notify: etckeeper update
+  tags: 
+    - snmp
     - nagios
     - nrpe

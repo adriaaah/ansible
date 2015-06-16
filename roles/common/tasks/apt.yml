@@ -18,9 +18,51 @@
     - unattended-upgrades
     - apt-listchanges
     - debsums
-  notify: unattended-upgrades settings
   tags: 
     - apt
     - unattended-upgrades
     - apt-listchanges
     - debsums
+
+### unattended-upgrades
+- name: unattended-upgrades settings
+  copy:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+  tags: unattended-upgrades
+
+### apt-listchanges
+- name: apt-listchanges settings
+  lineinfile:
+    dest: /etc/apt/listchanges.conf
+    state: present
+    regexp: '^email_address=root'
+    line: '^email_address="{{ smtpRecipient }}"'
+  tags: apt-listchanges
+
+### debsums
+- name: debsums settings
+  lineinfile:
+    dest: /etc/default/debsums
+    state: present
+    regexp: '^CRON_CHECK=never'
+    line: '^CRON_CHECK=weekly'
+  tags: debsums
+
+### Sends an e-mail when a update needs a reboot to take effect.
+- name: Notify when reboot is required
+  copy:
+    src: reboot-required
+    dest: /etc/cron.daily/reboot-required
+    mode: 0700
+
+### etckeeper commit
+- name: Commit apt changes to etckeeper
+  debug:
+    msg: "Commit apt changes to etckeeper."
+  notify: etckeeper update
+  tags:
+    - apt
+    - unattended-upgrades
+    - debsums
+    - apt-listchanges

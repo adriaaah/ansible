@@ -1,3 +1,0 @@
----
-- name: Configure Vim as default editor
-  command: update-alternatives --set editor /usr/bin/vim.basic

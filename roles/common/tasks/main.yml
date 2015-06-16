@@ -1,17 +1,35 @@
 ---
+
 - include: apt.yml
-- include: purge-old-kernels.yml
 - include: ntp.yml
 - include: ssmtp.yml
 - include: logwatch.yml
 - include: monitoring.yml
+- include: webmin.yml
+
+### Purging old kernels, but keeps the running one and two latest also.
+# This script is a part of bikeshed Ubuntu package, which is, according
+# to its description, a "random useful tools that do not yet have a
+# permanent home".
+# This package is pretty large and we just need this script, so
+# previously was extracted and put apart, preserving both path and
+# permissions.
+- name: Purge old kernels
+  copy:
+    src: purge-old-kernels
+    dest: /usr/bin/purge-old-kernels
+    mode: 0755
+  tags: purge-old-kernels
+
+### Purge-old-kernels
+- name: purge-old-kernels run
+  command: /usr/bin/purge-old-kernels -qy
 
 ### Apparmor is removed for testing purposes.
 - name: Remove apparmor
   apt:
     name: apparmor
     state: absent
-  notify: etckeeper update
   tags: apparmor
 
 ### UFW will removed since I use Iptables.
@@ -19,10 +37,50 @@
   apt:
     name: ufw
     state: absent
-  notify: etckeeper update
   tags:
     - ufw
     - iptables
 
-- include: webmin.yml
-- include: misc.yml
+- name: Configure Vim as default editor
+  command: 'update-alternatives --set editor /usr/bin/vim.basic'
+  tags: vim
+
+- name: Reduce the server's configuration to bufferbloat
+  lineinfile:
+    dest: /etc/sysctl.conf
+    line: "{{ item }}"
+    state: present
+    insertafter: EOF
+  with_items:
+    - "# Reduce the server's contribution to bufferbloat."
+    - "net.core.default_qdisc=fq_codel"
+  tags: bufferbloat
+
+- name: Add some extra entropy
+  apt:
+    name: rng-tools
+    state: present
+  tags: rng
+
+# Add RNG module to /etc/modules to load it at boot time.
+- name: rng boot time
+  lineinfile:
+    dest: /etc/modules
+    state: present
+    insertafter: EOF
+    line: "tpm_rng"
+  tags: rng
+
+### etckeeper commit
+- name: Commit etckeeper
+  debug:
+    msg: "Commit changes to etckeeper."
+  notify: etckeeper update
+  tags:
+    - purge-old-kernels
+    - apparmor
+    - ufw
+    - iptables
+    - vim
+    - bufferbloat
+    - rng

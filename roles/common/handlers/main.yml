@@ -1,10 +1,6 @@
 ---
 
 - include: ntp.yml
-- include: apt.yml
-- include: ssmtp.yml
-- include: logwatch.yml
 - include: snmp.yml
 - include: webmin.yml
 - include: nrpe.yml
-

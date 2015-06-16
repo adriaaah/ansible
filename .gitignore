@@ -1,5 +1,3 @@
-ubuntu.ks
-production
+.*.swp
+inventories/*
 roles/external/templates/iptables.rules.j2
-roles/tomcat/files/jssecacerts
-stage

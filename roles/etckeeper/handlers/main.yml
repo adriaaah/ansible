@@ -1,5 +1,6 @@
 ---
 
+# Looks for changed files in order to put them into the commit message.
 - name: etckeeper update
   shell: 'cd /etc && git ls-files -m'
   register: etckeeperCommit

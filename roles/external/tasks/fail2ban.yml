@@ -4,5 +4,18 @@
   apt:
     name: fail2ban
     state: present
-  notify: fail2ban settings
+  tags: fail2ban
+
+- name: fail2ban settings
+  template:
+    src: jail.conf.j2
+    dest: /etc/fail2ban/jail.conf
+  notify: fail2ban restart
+  tags: fail2ban
+
+# Etckeeper commit
+- name: Commit Fail2ban changes to etckeeper
+  debug:
+    msg: "Commit Fail2ban changes to etckeeper."
+  notify: etckeeper update
   tags: fail2ban

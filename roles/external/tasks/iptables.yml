@@ -1,5 +1,5 @@
 ---
-- name: Start Iptables at boot time.
+- name: Start Iptables at boot time by installing iptables-persistent package.
   apt:
     name: iptables-persistent
     state: present
@@ -11,11 +11,18 @@
 # Another way to create protocol+port-based rules
 #   lineinfile:
 #     dest: /etc/iptables/rules.v4
-#     regexp: "^-A INPUT -s {{ publicIP }} -p {{ item.proto }} -m {{ item.proto }} --dport {{ item.port }} -j ACCEPT$"
+#     regexp: "^-A INPUT -s {{ publicIp }} -p {{ item.proto }} -m {{ item.proto }} --dport {{ item.port }} -j ACCEPT$"
 #     line: "-A INPUT -s {{ publicIp }} -p {{ item.proto }} -m {{ item.proto }} --dport {{ item.port }} -j ACCEPT"
 #     insertafter: "^:OUTPUT ACCEPT \[\d*:\d*\]$"
 # with_items:
 #   - { proto: tcp, port: 22 }
 #   - { proto: tcp, port: 80 }
   notify: iptables restart
+  tags: iptables
+
+# Commit etckeeper
+- name: Commit Iptables changes to etckeeper
+  debug:
+    msg: "Commit Iptables changes to etckeeper."
+  notify: etckeeper update
   tags: iptables

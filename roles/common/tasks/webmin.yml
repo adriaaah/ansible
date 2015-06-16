@@ -1,10 +1,42 @@
 ---
-- name: Webmin prerequisites
+- name: Add webmin official repos.
   apt_repository:
     repo: "{{ item }}"
     state: present
   with_items:
     - deb http://download.webmin.com/download/repository sarge contrib
     - deb http://webmin.mirror.somersettechsolutions.co.uk/repository sarge contrib  
-  notify: webmin apt key
+  tags: webmin
+
+- name: Add repo's key.
+  apt_key:
+    url: http://www.webmin.com/jcameron-key.asc
+    state: present
+  tags: webmin
+
+- name: Install webmin.
+  apt:
+    update_cache: yes
+    name: webmin
+    state: present
+  tags: webmin
+
+- name: Copy our own encrypted certificate
+  copy:
+    src: miniserv.key
+    dest: /etc/webmin/miniserv.key
+    backup: yes
+  tags: webmin
+
+- name: Decrypt certificate
+  command: openssl aes-256-cbc -salt -a -d -in /etc/webmin/miniserv.key -out /etc/webmin/miniserv.pem -k {{ decryptKey }}
+    removes=/etc/webmin/miniserv.key
+  notify: webmin restart
+  tags: webmin
+
+### etckeeper commit
+- name: Commit etckeeper
+  debug:
+    msg: "Commit Webmin changes to etckeeper."
+  notify: etckeeper update
   tags: webmin

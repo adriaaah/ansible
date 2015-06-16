@@ -20,5 +20,8 @@ My Ansible playbooks, which are useful to run my daily job and hope become also 
 * Although all this content is public and free (read [LICENSE](LICENSE) file), it was designed for the servers I manage, so you **should** modify it.
 * Suggestions and improvements are welcome. Otherwise, crap content goes to `/dev/null`.
 
-## Bonus
-* A basic [Kickstart file for Ubuntu](kickstart-ubuntu-template.ks) created with `system-config-kickstart` Ubuntu tool. Yes, I should move to another place. Maybe someday, you know.
+## Credits
+* `ansible-examples` were essential to understand how powerful can be Ansible.
+* Some tweaks implemented here are seen before in [François Marier blog](
+http://feeding.cloud.geek.nz/posts/usual-server-setup).
+* Other tips are found at [Ubuntu Hardening Guide](http://hardenubuntu.com/).
