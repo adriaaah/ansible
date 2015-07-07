@@ -36,16 +36,26 @@
 - name: Copy our own encrypted certificate
   copy:
     src: "{{ scope }}-cert.key"
-    dest: /etc/webmin/miniserv.key
+    dest: /etc/webmin/{{ scope }}-cert.key
     backup: yes
   when: webmin_check.rc == 1
   tags: webmin
 
 - name: Decrypt certificate
-  command: 'openssl aes-256-cbc -salt -a -d -in /etc/webmin/miniserv.key -out /etc/webmin/miniserv.pem -k "{{ decryptKey }}"'
-#    removes: /etc/webmin/miniserv.key'
+  command: 'openssl aes-256-cbc -salt -a -d -in /etc/webmin/{{ scope }}-cert.key -out /etc/webmin/miniserv.pem -k "{{ decryptKey }}"'
   notify: webmin restart
   when: webmin_check.rc == 1
+  tags: webmin
+
+- name: Check if encrypted certificate still exists.
+  register: encryptedCertificate_check
+  stat:
+    path: /etc/webmin/{{ scope }}-cert.key
+  tags: webmin
+
+- name:  Wipe our encrypted certificate after decrypt it.
+  command: 'shred -u /etc/webmin/"{{ scope }}-cert.key"'
+  when: encryptedCertificate_check.stat.exists
   tags: webmin
 
 ### etckeeper commit
