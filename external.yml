@@ -6,3 +6,5 @@
   roles:
     - common
     - external
+  vars:
+    - scope: external

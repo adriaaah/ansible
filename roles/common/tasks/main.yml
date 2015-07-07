@@ -8,10 +8,10 @@
 - include: webmin.yml
 
 ### Purging old kernels, but keeps the running one and two latest also.
-# This script is a part of bikeshed Ubuntu package, which is, according
-# to its description, a "random useful tools that do not yet have a
-# permanent home".
-# This package is pretty large and we just need this script, so
+# This script is a part of «bikeshed» Ubuntu package, which is,
+# according to its description, a "random useful tools that do not yet
+# have a permanent home".
+# Since we only need this script and not the whole package,
 # previously was extracted and put apart, preserving both path and
 # permissions.
 - name: Purge old kernels
@@ -24,6 +24,16 @@
 ### Purge-old-kernels
 - name: purge-old-kernels run
   command: /usr/bin/purge-old-kernels -qy
+  tags: purge-old-kernels
+
+- name: Run purge-old-kernels monthly
+  cron:
+    name: "Remove old kernels monthly"
+    minute: "30"
+    hour: "3"
+    day: "1"
+    job: "/usr/bin/purge-old-kernels -qy > /dev/null 2>&1"
+  tags: purge-old-kernels
 
 ### Apparmor is removed for testing purposes.
 - name: Remove apparmor
@@ -46,14 +56,11 @@
   tags: vim
 
 - name: Reduce the server's configuration to bufferbloat
-  lineinfile:
-    dest: /etc/sysctl.conf
-    line: "{{ item }}"
+  sysctl:
+    name: net.core.default_qdisc
+    value: fq_codel
     state: present
-    insertafter: EOF
-  with_items:
-    - "# Reduce the server's contribution to bufferbloat."
-    - "net.core.default_qdisc=fq_codel"
+    reload: yes
   tags: bufferbloat
 
 - name: Add some extra entropy

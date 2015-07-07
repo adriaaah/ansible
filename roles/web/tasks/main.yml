@@ -10,3 +10,34 @@
   - apache
   - ssl
 
+- name: Enable SSL support to Apache2
+  command: 'a2enmod ssl'
+  notify: apache2 restart
+  tags:
+    - apache
+    - ssl
+
+- name: Copy SSL certificate
+  copy:
+    src: "{{ scope }}Certificate.tar.encrypted"
+    dest: /etc/ssl
+  tags:
+    - apache
+    - ssl
+
+- name: Decrypt SSL certificate
+  command: 'openssl aes-256-cbc -salt -a -d -in /etc/ssl/"{{scope}}"Certificate.tar.encrypted -out -k "{{ decryptKey }}"'
+  notify: untar apache certificate
+  tags:
+    - apache
+    - ssl
+
+### Etckeeper commit
+- name: Commit etckeeper
+  debug:
+    msg: "Commit Apache changes to etckeeper."
+  notify: etckeeper update
+  tags:
+    - apache
+    - ssl
+

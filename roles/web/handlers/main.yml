@@ -1,10 +1,13 @@
 ---
 
-# Apache2 settings
-#- name: apache settings
-#- notify apache copy certificates
+- name: apache2 restart
+  service:
+    name: apache
+    state: restarted
 
-# Certificates
-- name: apache 
-  notify: apache ssl
-  command: a2enmod ssl
+- name: untar apache certificate
+  command: 'tar xf /etc/ssl/"{{ scope }}externalCertificate.tar"'
+  notify: wipe tarred SSL certificate
+
+- name: wipe tarred SSL certificate
+  command: 'shred -u /etc/ssl/"{{ scope }}externalCertificate.tar"'

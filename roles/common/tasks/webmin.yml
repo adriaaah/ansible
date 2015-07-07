@@ -1,4 +1,12 @@
 ---
+- name: Check if Webmin is installed.
+#  command: 'apt-cache showpkg webmin'
+  command: 'dpkg-query -W webmin'
+  register: webmin_check
+  failed_when: webmin_check.rc > 1
+  changed_when: webmin_check.rc == 1
+  tags: webmin
+
 - name: Add webmin official repos.
   apt_repository:
     repo: "{{ item }}"
@@ -6,12 +14,14 @@
   with_items:
     - deb http://download.webmin.com/download/repository sarge contrib
     - deb http://webmin.mirror.somersettechsolutions.co.uk/repository sarge contrib  
+  when: webmin_check.rc == 1
   tags: webmin
 
 - name: Add repo's key.
   apt_key:
     url: http://www.webmin.com/jcameron-key.asc
     state: present
+  when: webmin_check.rc == 1
   tags: webmin
 
 - name: Install webmin.
@@ -19,19 +29,23 @@
     update_cache: yes
     name: webmin
     state: present
+  #when: webmin_check.stdout.find('Unable to locate package webmin') == -1
+  when: webmin_check.rc == 1
   tags: webmin
 
 - name: Copy our own encrypted certificate
   copy:
-    src: miniserv.key
+    src: "{{ scope }}-cert.key"
     dest: /etc/webmin/miniserv.key
     backup: yes
+  when: webmin_check.rc == 1
   tags: webmin
 
 - name: Decrypt certificate
-  command: openssl aes-256-cbc -salt -a -d -in /etc/webmin/miniserv.key -out /etc/webmin/miniserv.pem -k {{ decryptKey }}
-    removes=/etc/webmin/miniserv.key
+  command: 'openssl aes-256-cbc -salt -a -d -in /etc/webmin/miniserv.key -out /etc/webmin/miniserv.pem -k "{{ decryptKey }}"'
+#    removes: /etc/webmin/miniserv.key'
   notify: webmin restart
+  when: webmin_check.rc == 1
   tags: webmin
 
 ### etckeeper commit
@@ -39,4 +53,5 @@
   debug:
     msg: "Commit Webmin changes to etckeeper."
   notify: etckeeper update
+  when: webmin_check.rc == 1
   tags: webmin
