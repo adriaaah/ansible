@@ -23,7 +23,7 @@
 
 ### Purge-old-kernels
 - name: purge-old-kernels run
-  command: /usr/bin/purge-old-kernels -qy
+  command: '/usr/bin/purge-old-kernels -qy'
   tags: purge-old-kernels
 
 - name: Run purge-old-kernels monthly
@@ -34,6 +34,33 @@
     day: "1"
     job: "/usr/bin/purge-old-kernels -qy > /dev/null 2>&1"
   tags: purge-old-kernels
+
+### Restart if required.
+- name: Run reboot-required script.
+  command: '/etc/cron.daily/reboot-required'
+  tags: reboot
+
+- name: Check if a restart is required.
+  stat: path=/var/run/reboot-required
+  register: rebootRequired
+  tags: reboot
+
+- name: Do a reboot.
+  command: '/sbin/reboot'
+  async: 0
+  poll: 0
+  ignore_errors: true
+  when: rebootRequired.stat.exists
+  tags: reboot
+
+- name: Waiting for server to come back
+  local_action: 
+    wait_for 
+      host={{ inventory_hostname }}
+      port=22
+      delay=15
+      timeout=300
+  sudo: false
 
 ### Apparmor is removed for testing purposes.
 - name: Remove apparmor

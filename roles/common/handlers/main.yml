@@ -1,6 +1,6 @@
 ---
 
+- include: nrpe.yml
 - include: ntp.yml
 - include: snmp.yml
 - include: webmin.yml
-- include: nrpe.yml
