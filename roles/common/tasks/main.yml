@@ -34,7 +34,6 @@
     day: "1"
     job: "/usr/bin/purge-old-kernels -qy > /dev/null 2>&1"
   tags: purge-old-kernels
-
 ### Restart if required.
 - name: Run reboot-required script.
   command: '/etc/cron.daily/reboot-required'
@@ -45,7 +44,7 @@
   register: rebootRequired
   tags: reboot
 
-- name: Do a reboot.
+- name: Do a reboot if system requires it.
   command: '/sbin/reboot'
   async: 0
   poll: 0
@@ -54,10 +53,9 @@
   tags: reboot
 
 - name: Waiting for server to come back
-  local_action: 
-    wait_for 
+  local_action:
+    wait_for
       host={{ inventory_hostname }}
-      port=22
       delay=15
       timeout=300
   sudo: false
@@ -78,10 +76,12 @@
     - ufw
     - iptables
 
+### Set Vim as default editor
 - name: Configure Vim as default editor
   command: 'update-alternatives --set editor /usr/bin/vim.basic'
   tags: vim
-
+### See http://www.bufferbloat.net/projects/codel/wiki for further
+# information.
 - name: Reduce the server's configuration to bufferbloat
   sysctl:
     name: net.core.default_qdisc
@@ -90,6 +90,7 @@
     reload: yes
   tags: bufferbloat
 
+### Improves quality of /dev/random output.
 - name: Add some extra entropy
   apt:
     name: rng-tools

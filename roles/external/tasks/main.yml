@@ -1,5 +1,13 @@
 ---
-- include: rkhunter.yml
-- include: iptables.yml
+
 - include: fail2ban.yml
+- include: iptables.yml
 - include: psad.yml
+- include: rkhunter.yml
+- include: sysctl.yml
+
+- name:  Prevent IP spoofing.
+  lineinfile:
+    dest: /etc/host.conf
+    line: "nospoof on"
+

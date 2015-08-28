@@ -23,7 +23,7 @@
   with_items:
     - { regexp: '^VCS="bzr"', line: '#VCS="bzr"' }
     - { regexp: '^#?VCS="git"', line: 'VCS="git"' }
-    - { regexp: '^#AVOID_DAILY_AUTOCOMMITS=1', line: 'AVOID_DAILY_AUTOCOMMITS=1' }
+#    - { regexp: '^#AVOID_DAILY_AUTOCOMMITS=1', line: 'AVOID_DAILY_AUTOCOMMITS=1' }
   tags: etckeeper
 
 

@@ -1,0 +1,72 @@
+---
+
+### Apache2 installation
+- name: apache2 installation
+  apt:
+    name: apache2
+    state: present
+  notify: apache ssl
+  tags:
+  - apache
+  - ssl
+
+- name: Enable SSL support to Apache2
+  command: 'a2enmod ssl'
+  notify: apache2 restart
+  tags:
+    - apache
+    - ssl
+
+- name: Copy SSL certificate
+  copy:
+    src: "{{ scope }}Certificate.tar.encrypted"
+    dest: /etc/ssl
+  tags:
+    - apache
+    - ssl
+
+- name: Decrypt SSL certificate
+  command: 'openssl aes-256-cbc -salt -a -d -in /etc/ssl/"{{scope}}"Certificate.tar.encrypted -out -k "{{ decryptKey }}"'
+  notify: untar apache certificate
+  tags:
+    - apache
+    - ssl
+
+- name: Disable Server Signature
+  lineinfile: 
+    dest: /etc/apache2/conf-available/conf-available/security.conf
+    backrefs: yes
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^ServerSignature Off', line: '#ServerSignature Off' }
+    - { regexp: '^#?ServerSignature On', line: 'ServerSignature On' }
+    - { regexp: '^ServerTokens OS', line: '^ServerTokens Prod' }
+  notify: apache2 restart
+  tags:
+    - apache
+
+- name: Disable autoindex
+  command: 'a2dismod autoindex'
+  notify: apache2 restart
+  tags:
+    - apache
+
+- name: Disable SSLv3
+  lineinfile:
+    dest: /etc/apache2/mods-available/ssl.conf
+    backrefs: yes
+    regexp: "^?SSLProtocol all"
+    line: "SSLProtocol all -SSLv3"
+  tags:
+    - apache2
+
+### Etckeeper commit
+- name: Commit etckeeper
+  debug:
+    msg: "Commit Apache changes to etckeeper."
+  notify: etckeeper update
+  tags:
+    - apache
+    - ssl
+

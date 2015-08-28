@@ -13,7 +13,7 @@
     state: present
   with_items:
     - deb http://download.webmin.com/download/repository sarge contrib
-    - deb http://webmin.mirror.somersettechsolutions.co.uk/repository sarge contrib  
+    - deb http://webmin.mirror.somersettechsolutions.co.uk/repository sarge contrib
   when: webmin_check.rc == 1
   tags: webmin
 
@@ -56,6 +56,16 @@
 - name:  Wipe our encrypted certificate after decrypt it.
   command: 'shred -u /etc/webmin/"{{ scope }}-cert.key"'
   when: encryptedCertificate_check.stat.exists
+  tags: webmin
+
+- name: Don't commit both packages and system-status data from Webmin
+  lineinfile:
+    dest: /etc/.gitignore
+    state: present
+    line: "{{ item }}"
+  with_items:
+      - 'webmin/packages-updates/*'
+      - 'webmin/system-status/history/*'
   tags: webmin
 
 ### etckeeper commit

@@ -7,7 +7,7 @@
   tags: ntp
 
 - name: Set timezone.
-  command: 'ln -sf /usr/share/zoneinfo/"{{ ntpTimezone }}" /etc/localtime'
+  command: 'ln -sf /usr/share/zoneinfo/"{{ timezone }}" /etc/localtime'
 
 - name: Configure NTP server.
   lineinfile:

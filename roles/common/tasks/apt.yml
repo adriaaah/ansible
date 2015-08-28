@@ -18,7 +18,7 @@
     - unattended-upgrades
     - apt-listchanges
     - debsums
-  tags: 
+  tags:
     - apt
     - unattended-upgrades
     - apt-listchanges
@@ -46,7 +46,7 @@
     dest: /etc/default/debsums
     state: present
     regexp: '^CRON_CHECK=never'
-    line: '^CRON_CHECK=weekly'
+    line: 'CRON_CHECK=weekly'
   tags: debsums
 
 ### Sends an e-mail when a update needs a reboot to take effect.
