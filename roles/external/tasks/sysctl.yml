@@ -33,5 +33,6 @@
     - { name: 'net.ipv6.conf.all.accept_redirects', value: '0' }
     - { name: 'net.ipv4.conf.default.accept_redirects', value: '0' }
     - { name: 'net.ipv6.conf.default.accept_redirects', value: '0' }
-    # Ignore Directed pings
-    - { name: 'net.ipv4.icmp_echo_ignore_all', value: '1' }
+# Commented out since pings are blocked by Iptables.
+#    # Ignore Directed pings
+#    - { name: 'net.ipv4.icmp_echo_ignore_all', value: '1' }
