@@ -127,7 +127,7 @@ maxretry = 6
 
 [dropbear]
 
-enabled  = false
+enabled  = true
 port     = ssh
 filter   = dropbear
 logpath  = /var/log/auth.log
@@ -207,7 +207,7 @@ maxretry = 6
 
 [apache]
 
-enabled  = false
+enabled  = true
 port     = http,https
 filter   = apache-auth
 logpath  = /var/log/apache*/*error.log
@@ -217,7 +217,7 @@ maxretry = 6
 # for compatibility with previous (<0.7.6-2) releases
 [apache-multiport]
 
-enabled   = false
+enabled   = true
 port      = http,https
 filter    = apache-auth
 logpath   = /var/log/apache*/*error.log
@@ -225,7 +225,7 @@ maxretry  = 6
 
 [apache-noscript]
 
-enabled  = false
+enabled  = true
 port     = http,https
 filter   = apache-noscript
 logpath  = /var/log/apache*/*error.log
@@ -233,7 +233,7 @@ maxretry = 6
 
 [apache-overflows]
 
-enabled  = false
+enabled  = true
 port     = http,https
 filter   = apache-overflows
 logpath  = /var/log/apache*/*error.log
@@ -245,10 +245,10 @@ maxretry = 2
 
 [php-url-fopen]
 
-enabled = false
+enabled = true
 port    = http,https
 filter  = php-url-fopen
-logpath = /var/www/*/logs/access_log
+logpath = /var/log/apache*/access_log
 
 # A simple PHP-fastcgi jail which works with lighttpd.
 # If you run a lighttpd server, then you probably will
